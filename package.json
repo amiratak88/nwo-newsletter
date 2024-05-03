@@ -4,8 +4,8 @@
 	"main": "src/index.ts",
 	"type": "module",
 	"scripts": {
-		"start": "DB=db node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/index.ts",
-		"test": "npm run db:reset:test && DB=db-test node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' --test-concurrency=1,1 --test 'tests/**/*.test.ts'",
+		"start": "DB=db node --import ./src/register-ts-node-loader.js src/index.ts",
+		"test": "npm run db:reset:test && DB=db-test node --import ./src/register-ts-node-loader.js --test-concurrency=1,1 --test 'tests/**/*.test.ts'",
 		"dev": "nodemon --watch 'src/**/*' --ext ts --exec npm start",
 		"db:console": "sqlite3 db",
 		"db:console:test": "sqlite3 db-test",
