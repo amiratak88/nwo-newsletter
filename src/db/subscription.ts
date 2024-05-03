@@ -13,8 +13,8 @@ export async function subscribe(params: z.infer<typeof subscriptionCreationSchem
 	const validatedParams = subscriptionCreationSchema.parse(params);
 
 	const subscriptions = await execAsync<Subscription>(
-		"INSERT INTO subscriptions (email, industry, subcategory) VALUES (?, ?, ?) RETURNING *",
-		[validatedParams.email, validatedParams.industry, validatedParams.subcategory],
+		"INSERT INTO subscriptions (email, industry, source, subcategory) VALUES (?, ?, ?, ?) RETURNING *",
+		[validatedParams.email, validatedParams.industry, validatedParams.source, validatedParams.subcategory],
 	);
 
 	return subscriptions[0];
@@ -26,8 +26,8 @@ export async function unsubscribe(
 	const validatedParams = unsubscriptionSchema.parse(params);
 
 	const subscriptions = await execAsync<Subscription>(
-		"DELETE FROM subscriptions WHERE email = ? AND industry = ? AND subcategory = ? RETURNING *",
-		[validatedParams.email, validatedParams.industry, validatedParams.subcategory],
+		"DELETE FROM subscriptions WHERE email = ? AND industry = ? AND source = ? AND subcategory = ? RETURNING *",
+		[validatedParams.email, validatedParams.industry, validatedParams.source, validatedParams.subcategory],
 	);
 
 	return subscriptions[0];

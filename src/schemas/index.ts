@@ -4,6 +4,7 @@ export const subscriptionSchema = z.object({
 	id: z.string().uuid(),
 	email: z.string().email(),
 	industry: z.enum(["consumer health", "beauty", "tech"]),
+	source: z.enum(["social media", "news"]),
 	subcategory: z.enum(["new product releases", "mergers and acquisitions"]),
 });
 export const subscriptionCreationSchema = subscriptionSchema.omit({ id: true });

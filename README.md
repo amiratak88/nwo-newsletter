@@ -1,6 +1,6 @@
 # NWO Newsletter
 
-This POC API allows subscribing to a newsletter with specific "industry" and "subcategory" of the news. You can subscribe to as many industries and subcategories as desired.
+This POC API allows subscribing to a newsletter with specific "industry", "source", and "subcategory" of the news. You can subscribe to as many industries, sources and subcategories as desired.
 
 ## Installation
 
@@ -20,14 +20,14 @@ To run the E2E tests, run `npm test`
 
 ### POST /subscribe
 
-Subscribes to the newsletter for the provided "industry" and "subcategory".
+Subscribes to the newsletter for the provided "industry", "source" and "subcategory".
 
 #### Example request with curl
 
 ```bash
 curl -X POST localhost:3000/subscribe \
   -H "Content-Type: application/json" \
-  -d '{"email": "john.doe@example.org", "industry": "tech", "subcategory": "new product releases"}'
+  -d '{"email": "john.doe@example.org", "industry": "tech", "source": "news", "subcategory": "new product releases"}'
 ```
 
 #### Example response
@@ -38,6 +38,7 @@ curl -X POST localhost:3000/subscribe \
 		"id": 1,
 		"email": "john.doe@example.org",
 		"industry": "tech",
+		"source": "news",
 		"subcategory": "new product releases"
 	}
 }
@@ -45,14 +46,14 @@ curl -X POST localhost:3000/subscribe \
 
 ### POST /unsubscribe
 
-Unsubscribes from the newsletter for the provided "industry" and "subcategory".
+Unsubscribes from the newsletter for the provided "industry", "source" and "subcategory".
 
 #### Example request with curl
 
 ```bash
 curl -X POST localhost:3000/unsubscribe \
   -H "Content-Type: application/json" \
-  -d '{"email": "john.doe@example.org", "industry": "tech", "subcategory": "new product releases"}'
+  -d '{"email": "john.doe@example.org", "industry": "tech", "source": "news", "subcategory": "new product releases"}'
 ```
 
 #### Example response
@@ -63,6 +64,7 @@ curl -X POST localhost:3000/unsubscribe \
 		"id": 1,
 		"email": "john.doe@example.org",
 		"industry": "tech",
+		"source": "news",
 		"subcategory": "new product releases"
 	}
 }
@@ -70,7 +72,7 @@ curl -X POST localhost:3000/unsubscribe \
 
 ### POST /unsubscribe_from_all
 
-Unsubscribes from the newsletter for all industries and subcategories.
+Unsubscribes from the newsletter for all industries, sources and subcategories.
 
 #### Example request with curl
 
@@ -89,12 +91,14 @@ curl -X POST localhost:3000/unsubscribe_from_all \
 			"id": 1,
 			"email": "john.doe@example.org",
 			"industry": "tech",
+			"source": "news",
 			"subcategory": "new product releases"
 		},
 		{
 			"id": 2,
 			"email": "john.doe@example.org",
 			"industry": "beauty",
+			"source": "news",
 			"subcategory": "new product releases"
 		}
 	]

@@ -10,10 +10,10 @@ beforeEach(async () => {
 	await execAsync(
 		`
     INSERT INTO subscriptions
-      (email, industry, subcategory)
+      (email, industry, source, subcategory)
     VALUES
-      ('john.doe@example.org', 'tech', 'new product releases'),
-      ('john.doe@example.org', 'beauty', 'new product releases')
+      ('john.doe@example.org', 'tech', 'news', 'new product releases'),
+      ('john.doe@example.org', 'beauty', 'news', 'new product releases')
     `,
 	);
 });
@@ -22,7 +22,7 @@ describe("unsubscribing from a single newsletter", () => {
 	it("successfully unsubscribes from the specified newsletter", async () => {
 		const response = await request(app)
 			.post("/unsubscribe")
-			.send({ email: "john.doe@example.org", industry: "tech", subcategory: "new product releases" })
+			.send({ email: "john.doe@example.org", industry: "tech", source: "news", subcategory: "new product releases" })
 			.expect(200);
 
 		expect(await getCount("subscriptions")).toBe(1);
@@ -33,6 +33,7 @@ describe("unsubscribing from a single newsletter", () => {
 			id: expect.any(Number),
 			email: "john.doe@example.org",
 			industry: "tech",
+			source: "news",
 			subcategory: "new product releases",
 		});
 	});
@@ -40,7 +41,12 @@ describe("unsubscribing from a single newsletter", () => {
 	it("returns an error when unsubscribing from a non-existing subscription", async () => {
 		const response = await request(app)
 			.post("/unsubscribe")
-			.send({ email: "john.doe@example.org", industry: "tech", subcategory: "mergers and acquisitions" })
+			.send({
+				email: "john.doe@example.org",
+				industry: "tech",
+				source: "news",
+				subcategory: "mergers and acquisitions",
+			})
 			.expect(422);
 
 		expect(await getCount("subscriptions")).toBe(2);
@@ -63,6 +69,7 @@ describe("unsubscribing from all newsletters", () => {
 			id: expect.any(Number),
 			email: "john.doe@example.org",
 			industry: "tech",
+			source: "news",
 			subcategory: "new product releases",
 		});
 
@@ -70,6 +77,7 @@ describe("unsubscribing from all newsletters", () => {
 			id: expect.any(Number),
 			email: "john.doe@example.org",
 			industry: "beauty",
+			source: "news",
 			subcategory: "new product releases",
 		});
 	});

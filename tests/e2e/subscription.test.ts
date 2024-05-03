@@ -11,7 +11,7 @@ describe("subscription", () => {
 	it("successfully subscribes to a newsletter", async () => {
 		const response = await request(app)
 			.post("/subscribe")
-			.send({ email: "john.doe@example.org", industry: "tech", subcategory: "new product releases" })
+			.send({ email: "john.doe@example.org", industry: "tech", source: "news", subcategory: "new product releases" })
 			.expect(201);
 
 		expect(await getCount("subscriptions")).toBe(1);
@@ -22,6 +22,7 @@ describe("subscription", () => {
 			id: expect.any(Number),
 			email: "john.doe@example.org",
 			industry: "tech",
+			source: "news",
 			subcategory: "new product releases",
 		});
 	});
@@ -29,14 +30,14 @@ describe("subscription", () => {
 	when("already subscribed to a newsletter", () => {
 		beforeEach(async () => {
 			await execAsync(
-				"INSERT INTO subscriptions (email, industry, subcategory) VALUES ('john.doe@example.org', 'tech', 'new product releases')",
+				"INSERT INTO subscriptions (email, industry, source, subcategory) VALUES ('john.doe@example.org', 'tech', 'news', 'new product releases')",
 			);
 		});
 
 		it("does not subscribe to the same newsletter again", async () => {
 			const response = await request(app)
 				.post("/subscribe")
-				.send({ email: "john.doe@example.org", industry: "tech", subcategory: "new product releases" })
+				.send({ email: "john.doe@example.org", industry: "tech", source: "news", subcategory: "new product releases" })
 				.expect(422);
 
 			expect(await getCount("subscriptions")).toBe(1);
@@ -46,7 +47,12 @@ describe("subscription", () => {
 		it("can subscribe to a different newsletter", async () => {
 			const response = await request(app)
 				.post("/subscribe")
-				.send({ email: "john.doe@example.org", industry: "beauty", subcategory: "new product releases" })
+				.send({
+					email: "john.doe@example.org",
+					industry: "beauty",
+					source: "news",
+					subcategory: "new product releases",
+				})
 				.expect(201);
 
 			expect(await getCount("subscriptions")).toBe(2);
@@ -57,6 +63,7 @@ describe("subscription", () => {
 				id: expect.any(Number),
 				email: "john.doe@example.org",
 				industry: "beauty",
+				source: "news",
 				subcategory: "new product releases",
 			});
 		});
@@ -66,7 +73,7 @@ describe("subscription", () => {
 		it("does not create a subscription and returns a 422 error", async () => {
 			const response = await request(app)
 				.post("/subscribe")
-				.send({ email: "john.doe@example.org", subcategory: "new product releases" })
+				.send({ email: "john.doe@example.org", source: "news", subcategory: "new product releases" })
 				.expect(422);
 
 			expect(await getCount("subscriptions")).toBe(0);
@@ -78,7 +85,12 @@ describe("subscription", () => {
 		it("does not create a subscription and returns a 422 error", async () => {
 			const response = await request(app)
 				.post("/subscribe")
-				.send({ email: "john.doe@example.org", industry: "some random industry", subcategory: "new product releases" })
+				.send({
+					email: "john.doe@example.org",
+					industry: "some random industry",
+					source: "news",
+					subcategory: "new product releases",
+				})
 				.expect(422);
 
 			expect(await getCount("subscriptions")).toBe(0);
