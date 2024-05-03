@@ -4,11 +4,16 @@
 	"main": "src/index.ts",
 	"type": "module",
 	"scripts": {
-		"start": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/index.ts",
+		"start": "DB=db node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/index.ts",
+		"test": "npm run db:reset:test && DB=db-test node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' --test-concurrency=1,1 --test 'tests/**/*.test.ts'",
 		"dev": "nodemon --watch 'src/**/*' --ext ts --exec npm start",
 		"db:console": "sqlite3 db",
-		"db:setup": "for f in $(ls src/migrations/*.sql | sort -V); do sqlite3 db < \"$f\"; done",
-		"db:reset": "rm db && npm run db:setup"
+		"db:console:test": "sqlite3 db-test",
+		"db:migrate": "for f in $(ls migrations/*.sql | sort -V); do sqlite3 db < \"$f\"; done",
+		"db:migrate:test": "for f in $(ls migrations/*.sql | sort -V); do sqlite3 db-test < \"$f\"; done",
+		"db:reset": "rm db 2>/dev/null; npm run db:migrate",
+		"db:reset:test": "rm db-test 2>/dev/null; npm run db:migrate:test",
+		"typecheck": "tsc"
 	},
 	"keywords": [],
 	"author": "",
@@ -23,7 +28,10 @@
 		"zod": "^3.23.5"
 	},
 	"devDependencies": {
+		"@types/supertest": "^6.0.2",
+		"expect": "^29.7.0",
 		"nodemon": "^3.1.0",
-		"prettier": "^3.2.5"
+		"prettier": "^3.2.5",
+		"supertest": "^7.0.0"
 	}
 }
