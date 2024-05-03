@@ -17,7 +17,7 @@
 	},
 	"keywords": [],
 	"author": "",
-	"license": "ISC",
+	"license": "UNLICENSED",
 	"description": "",
 	"dependencies": {
 		"@types/express": "^4.17.21",
