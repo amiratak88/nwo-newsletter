@@ -5,51 +5,42 @@ import {
 	unsubscriptionSchema,
 } from "../schemas/index.js";
 import * as z from "zod";
-import { db } from "./index.js";
+import { execAsync } from "./index.js";
 
 type Subscription = z.infer<typeof subscriptionSchema>;
 
-export function subscribe(params: z.infer<typeof subscriptionCreationSchema>): Promise<Subscription> {
+export async function subscribe(params: z.infer<typeof subscriptionCreationSchema>): Promise<Subscription> {
 	const validatedParams = subscriptionCreationSchema.parse(params);
 
-	return new Promise((resolve, reject) => {
-		db.get<Subscription>(
-			"INSERT INTO subscriptions (email, industry, subcategory) VALUES (?, ?, ?) RETURNING *",
-			[validatedParams.email, validatedParams.industry, validatedParams.subcategory],
-			(err, row) => {
-				if (err) reject(err);
-				else resolve(row);
-			},
-		);
-	});
+	const subscriptions = await execAsync<Subscription>(
+		"INSERT INTO subscriptions (email, industry, subcategory) VALUES (?, ?, ?) RETURNING *",
+		[validatedParams.email, validatedParams.industry, validatedParams.subcategory],
+	);
+
+	return subscriptions[0];
 }
 
-export function unsubscribe(params: z.infer<typeof subscriptionCreationSchema>): Promise<Subscription | undefined> {
+export async function unsubscribe(
+	params: z.infer<typeof subscriptionCreationSchema>,
+): Promise<Subscription | undefined> {
 	const validatedParams = unsubscriptionSchema.parse(params);
 
-	return new Promise((resolve, reject) => {
-		db.get<Subscription>(
-			"DELETE FROM subscriptions WHERE email = ? AND industry = ? AND subcategory = ? RETURNING *",
-			[validatedParams.email, validatedParams.industry, validatedParams.subcategory],
-			(err, row) => {
-				if (err) reject(err);
-				else resolve(row);
-			},
-		);
-	});
+	const subscriptions = await execAsync<Subscription>(
+		"DELETE FROM subscriptions WHERE email = ? AND industry = ? AND subcategory = ? RETURNING *",
+		[validatedParams.email, validatedParams.industry, validatedParams.subcategory],
+	);
+
+	return subscriptions[0];
 }
 
-export function unsubscribeFromAll(params: z.infer<typeof completeUnsubscriptionSchema>): Promise<Subscription[]> {
+export async function unsubscribeFromAll(
+	params: z.infer<typeof completeUnsubscriptionSchema>,
+): Promise<Subscription[]> {
 	const validatedParams = completeUnsubscriptionSchema.parse(params);
 
-	return new Promise((resolve, reject) => {
-		db.all<Subscription>(
-			"DELETE FROM subscriptions WHERE email = ? RETURNING *",
-			[validatedParams.email],
-			(err, rows) => {
-				if (err) reject(err);
-				else resolve(rows);
-			},
-		);
-	});
+	const subscriptions = await execAsync<Subscription>("DELETE FROM subscriptions WHERE email = ? RETURNING *", [
+		validatedParams.email,
+	]);
+
+	return subscriptions;
 }

@@ -4,7 +4,7 @@ if (!process.env.DB) {
 	throw Error("DB env variable must be provided");
 }
 
-export const db = new sqlite3.Database(process.env.DB);
+const db = new sqlite3.Database(process.env.DB);
 
 export type Sqlite3Error = Error & {
 	errno: number;
@@ -15,9 +15,9 @@ export function isSqlite3Error(e: unknown): e is Sqlite3Error {
 	return e instanceof Error && "errno" in e && "code" in e;
 }
 
-export function execAsync<T = unknown>(query: string): Promise<T[]> {
+export function execAsync<T>(query: string, bindParms?: string[]): Promise<T[]> {
 	return new Promise((resolve, reject) => {
-		db.all<T>(query, (err, rows) => {
+		db.all<T>(query, bindParms, (err, rows) => {
 			if (err) reject(err);
 			else resolve(rows);
 		});
